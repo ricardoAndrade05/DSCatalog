@@ -1,0 +1,8 @@
+target/
+.mvn/
+**/.*_history
+*.log
+*.class
+.vscode/
+.idea/
+*.env
