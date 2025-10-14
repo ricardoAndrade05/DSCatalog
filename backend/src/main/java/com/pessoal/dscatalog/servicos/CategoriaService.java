@@ -17,9 +17,15 @@ public class CategoriaService {
 	private CategoriaRepository repository;
 	
 	@Transactional(readOnly = true)
-	public List<CategoriaDTO> findAll() {
+	public List<CategoriaDTO> categorias() {
 		List<Categoria> categorias = repository.findAll();
 		return categorias.stream().map(categoria -> new CategoriaDTO(categoria)).toList();
+	}
+
+	@Transactional(readOnly = true)
+	public CategoriaDTO categoriaPorId(Long id) {
+		Categoria categoria = repository.findById(id).get();
+		return new CategoriaDTO(categoria);
 	}
 
 }

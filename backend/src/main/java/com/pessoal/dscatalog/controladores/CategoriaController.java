@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,9 +20,15 @@ public class CategoriaController {
 	private CategoriaService service;
 	
 	@GetMapping
-	public ResponseEntity<List<CategoriaDTO>> findAll() {
-		List<CategoriaDTO> list = service.findAll();
+	public ResponseEntity<List<CategoriaDTO>> categorias() {
+		List<CategoriaDTO> list = service.categorias();
 		return ResponseEntity.ok().body(list);
+	}
+	
+	@GetMapping(value = "/{id}")
+	public ResponseEntity<CategoriaDTO> categoriaPorId(@PathVariable Long id) {
+		CategoriaDTO dto = service.categoriaPorId(id);
+		return ResponseEntity.ok().body(dto);
 	}
 
 }
