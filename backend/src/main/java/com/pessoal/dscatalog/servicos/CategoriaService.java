@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pessoal.dscatalog.dto.CategoriaDTO;
 import com.pessoal.dscatalog.entidades.Categoria;
+import com.pessoal.dscatalog.infra.excecoes.EntidadeNaoEncontradaException;
 import com.pessoal.dscatalog.repositorios.CategoriaRepository;
 
 @Service
@@ -24,7 +25,7 @@ public class CategoriaService {
 
 	@Transactional(readOnly = true)
 	public CategoriaDTO categoriaPorId(Long id) {
-		Categoria categoria = repository.findById(id).get();
+		Categoria categoria = repository.findById(id).orElseThrow(() -> new EntidadeNaoEncontradaException("Categoria não encontrada"));
 		return new CategoriaDTO(categoria);
 	}
 
