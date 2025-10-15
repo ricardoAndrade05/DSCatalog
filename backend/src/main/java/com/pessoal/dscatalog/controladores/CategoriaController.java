@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,25 +23,29 @@ public class CategoriaController {
 
 	@Autowired
 	private CategoriaService service;
-	
+
 	@GetMapping
 	public ResponseEntity<List<CategoriaDTO>> categorias() {
 		List<CategoriaDTO> list = service.categorias();
 		return ResponseEntity.ok().body(list);
 	}
-	
+
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<CategoriaDTO> categoriaPorId(@PathVariable Long id) {
 		CategoriaDTO dto = service.categoriaPorId(id);
 		return ResponseEntity.ok().body(dto);
 	}
-	
+
 	@PostMapping
 	public ResponseEntity<CategoriaDTO> inserir(@RequestBody CategoriaDTO dto) {
 		dto = service.inserir(dto);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-				.buildAndExpand(dto.getId()).toUri(); 
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
 		return ResponseEntity.created(uri).body(dto);
 	}
 
+	@PutMapping(value = "/{id}")
+	public ResponseEntity<CategoriaDTO> atualizar(@PathVariable Long id, @RequestBody CategoriaDTO dto) {
+		dto = service.atualizar(id,dto);
+		return ResponseEntity.ok().body(dto);
+	}
 }

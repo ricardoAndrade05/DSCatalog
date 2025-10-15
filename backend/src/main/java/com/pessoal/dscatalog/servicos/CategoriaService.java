@@ -11,6 +11,8 @@ import com.pessoal.dscatalog.entidades.Categoria;
 import com.pessoal.dscatalog.infra.excecoes.EntidadeNaoEncontradaException;
 import com.pessoal.dscatalog.repositorios.CategoriaRepository;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
 public class CategoriaService {
 	
@@ -35,6 +37,19 @@ public class CategoriaService {
 		categoria.setNome(dto.getNome());
 		categoria = repository.save(categoria);	
 		return new CategoriaDTO(categoria);
+	}
+
+	@Transactional
+	public CategoriaDTO atualizar(Long id, CategoriaDTO dto) {
+		try {
+			Categoria categoria = repository.getReferenceById(id);
+			categoria.setNome(dto.getNome());
+			categoria = repository.save(categoria);
+			return new CategoriaDTO(categoria);
+		} catch (EntityNotFoundException e) {
+			throw new EntidadeNaoEncontradaException("Id não encontrado " + id);
+		}
+
 	}
 
 }
