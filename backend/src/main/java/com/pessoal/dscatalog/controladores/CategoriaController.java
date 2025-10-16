@@ -4,6 +4,8 @@ import java.net.URI;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,8 +28,8 @@ public class CategoriaController {
 	private CategoriaService service;
 
 	@GetMapping
-	public ResponseEntity<List<CategoriaDTO>> categorias() {
-		List<CategoriaDTO> list = service.categorias();
+	public ResponseEntity<Page<CategoriaDTO>> categorias(Pageable pageable) {
+		Page<CategoriaDTO> list = service.categorias(pageable);
 		return ResponseEntity.ok().body(list);
 	}
 
