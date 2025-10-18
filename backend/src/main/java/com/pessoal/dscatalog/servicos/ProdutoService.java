@@ -8,10 +8,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pessoal.dscatalog.dto.CategoriaDTO;
 import com.pessoal.dscatalog.dto.ProdutoDTO;
+import com.pessoal.dscatalog.entidades.Categoria;
 import com.pessoal.dscatalog.entidades.Produto;
 import com.pessoal.dscatalog.infra.excecoes.DatabaseException;
 import com.pessoal.dscatalog.infra.excecoes.RecursoNaoEncontradoException;
+import com.pessoal.dscatalog.repositorios.CategoriaRepository;
 import com.pessoal.dscatalog.repositorios.ProdutoRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -21,6 +24,9 @@ public class ProdutoService {
 
 	@Autowired
 	private ProdutoRepository repository;
+	
+	@Autowired
+	private CategoriaRepository categoriaRepository;
 
 	@Transactional(readOnly = true)
 	public Page<ProdutoDTO> produtos(Pageable pageable) {
@@ -38,7 +44,7 @@ public class ProdutoService {
 	@Transactional
 	public ProdutoDTO inserir(ProdutoDTO dto) {
 		Produto produto = new Produto();
-		produto.setNome(dto.getNome());
+		dtoToentity(dto, produto);
 		produto = repository.save(produto);
 		return new ProdutoDTO(produto);
 	}
@@ -47,6 +53,7 @@ public class ProdutoService {
 	public ProdutoDTO atualizar(Long id, ProdutoDTO dto) {
 		try {
 			Produto produto = repository.getReferenceById(id);
+			dtoToentity(dto, produto);
 			produto.setNome(dto.getNome());
 			produto = repository.save(produto);
 			return new ProdutoDTO(produto);
@@ -65,6 +72,19 @@ public class ProdutoService {
 			repository.deleteById(id);
 		} catch (DataIntegrityViolationException e) {
 			throw new DatabaseException("Falha de integridade referencial");
+		}
+	}
+	
+	private void dtoToentity(ProdutoDTO dto, Produto produto) {
+		produto.setNome(dto.getNome());
+		produto.setDescricao(dto.getDescricao());
+		produto.setPreco(dto.getPreco());
+		produto.setImgUrl(dto.getImgUrl());
+		produto.setDate(dto.getDate());
+		produto.getCategorias().clear();
+		for (CategoriaDTO catDTO : dto.getCategorias()) {
+			Categoria categoria =  categoriaRepository.getReferenceById(catDTO.getId());
+			produto.getCategorias().add(categoria);
 		}
 	}
 }
