@@ -1,6 +1,7 @@
 package com.pessoal.dscatalog.controladores;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,10 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pessoal.dscatalog.dto.ProdutoDTO;
+import com.pessoal.dscatalog.infra.Factory;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
@@ -23,6 +28,9 @@ public class ProdutoControllerTestsIntegracao {
 	private Long idExistente;
 	private Long idInexistente;
 	private Long contagemTotalDeProdutos;
+	
+	@Autowired
+	private ObjectMapper objectMapper;
 	
 	@Autowired
 	private MockMvc mockMvc;
@@ -47,4 +55,40 @@ public class ProdutoControllerTestsIntegracao {
 		result.andExpect(jsonPath("$.content[2].nome").value("PC Gamer Alfa"));
 		
 	}
+	
+	@Test
+	public void atualizarDeveriaRetornarNaoEncontradoQuandoIdNaoExiste() throws Exception {
+		ProdutoDTO produtoDTO = Factory.criarProdutoDTO();
+		String corpoJson = objectMapper.writeValueAsString(produtoDTO);
+				
+		ResultActions result = mockMvc.perform(put("/produtos/{id}", idInexistente)
+				.content(corpoJson)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)); 
+		
+		result.andExpect(MockMvcResultMatchers.status().isNotFound());
+	}
+	
+	@Test
+	public void atualizarDeveriaRetornarProdutoDTOQuandoIdExiste() throws Exception {
+		ProdutoDTO produtoDTO = Factory.criarProdutoDTO();
+		String corpoJson = objectMapper.writeValueAsString(produtoDTO);
+		
+		String nomeEsperado = produtoDTO.getNome();
+		String descricaoEsperada = produtoDTO.getDescricao();
+		Long idEsperado = produtoDTO.getId();
+
+		
+		ResultActions result = mockMvc.perform(put("/produtos/{id}", idExistente)
+				.content(corpoJson)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)); 
+		
+		result.andExpect(MockMvcResultMatchers.status().isOk());
+		result.andExpect(jsonPath("$.id").value(idEsperado));
+		result.andExpect(jsonPath("$.nome").value(nomeEsperado));
+		result.andExpect(jsonPath("$.descricao").value(descricaoEsperada));
+	}
+	
+	
 }
