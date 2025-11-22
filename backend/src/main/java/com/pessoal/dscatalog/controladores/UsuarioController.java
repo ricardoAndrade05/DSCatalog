@@ -16,43 +16,44 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.pessoal.dscatalog.dto.ProdutoDTO;
-import com.pessoal.dscatalog.servicos.ProdutoService;
+import com.pessoal.dscatalog.dto.UserDTO;
+import com.pessoal.dscatalog.entidades.UserInsertDTO;
+import com.pessoal.dscatalog.servicos.UserService;
 
 @RestController
-@RequestMapping(value = "/produtos")
-public class ProdutoController {
+@RequestMapping(value = "/usuarios")
+public class UsuarioController {
 
 	@Autowired
-	private ProdutoService service;
+	private UserService service;
 
 	@GetMapping
-	public ResponseEntity<Page<ProdutoDTO>> produtos(Pageable pageable) {
-		Page<ProdutoDTO> list = service.produtos(pageable);
+	public ResponseEntity<Page<UserDTO>> usuarios(Pageable pageable) {
+		Page<UserDTO> list = service.users(pageable);
 		return ResponseEntity.ok().body(list);
 	}
 
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<ProdutoDTO> produtoPorId(@PathVariable Long id) {
-		ProdutoDTO dto = service.produtoPorId(id);
+	public ResponseEntity<UserDTO> ProdutoPorId(@PathVariable Long id) {
+		UserDTO dto = service.userPorId(id);
 		return ResponseEntity.ok().body(dto);
 	}
 
 	@PostMapping
-	public ResponseEntity<ProdutoDTO> inserir(@RequestBody ProdutoDTO dto) {
-		dto = service.inserir(dto);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
-		return ResponseEntity.created(uri).body(dto);
+	public ResponseEntity<UserDTO> inserir(@RequestBody UserInsertDTO dto) {
+		UserDTO userDTO = service.inserir(dto);
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(userDTO.getId()).toUri();
+		return ResponseEntity.created(uri).body(userDTO);
 	}
 
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<ProdutoDTO> atualizar(@PathVariable Long id, @RequestBody ProdutoDTO dto) {
+	public ResponseEntity<UserDTO> atualizar(@PathVariable Long id, @RequestBody UserDTO dto) {
 		dto = service.atualizar(id, dto);
 		return ResponseEntity.ok().body(dto);
 	}
 
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<ProdutoDTO> apagar(@PathVariable Long id) {
+	public ResponseEntity<UserDTO> apagar(@PathVariable Long id) {
 		service.apagar(id);
 		return ResponseEntity.noContent().build();
 	}

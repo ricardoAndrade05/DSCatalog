@@ -54,7 +54,6 @@ public class ProdutoService {
 		try {
 			Produto produto = repository.getReferenceById(id);
 			dtoToentity(dto, produto);
-			produto.setNome(dto.getNome());
 			produto = repository.save(produto);
 			return new ProdutoDTO(produto);
 		} catch (EntityNotFoundException e) {
