@@ -1,13 +1,16 @@
 package com.pessoal.dscatalog.entidades;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -24,8 +27,11 @@ public class Categoria {
 	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
 	private Instant dataCriacao;
 	
-	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
+	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE") 
 	private Instant dataAtualizacao;
+	
+	@ManyToMany(mappedBy = "categorias")
+	private Set<Produto> produtos = new HashSet<>();
 	
 	public Categoria() {
 	}
@@ -68,6 +74,12 @@ public class Categoria {
 	public void preUpdate() {
 		dataAtualizacao = Instant.now();
 	}
+	
+	public Set<Produto> getProdutos() {
+		return produtos;
+	}
+	
+	
 	
 	@Override
 	public int hashCode() {
