@@ -1,6 +1,4 @@
-package com.pessoal.dscatalog.entidades;
-
-import com.pessoal.dscatalog.dto.UserDTO;
+package com.pessoal.dscatalog.dto;
 
 public class UserInsertDTO extends UserDTO {
 	private String password;

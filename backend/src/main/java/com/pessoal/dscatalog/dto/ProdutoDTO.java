@@ -8,13 +8,25 @@ import java.util.Set;
 import com.pessoal.dscatalog.entidades.Categoria;
 import com.pessoal.dscatalog.entidades.Produto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+
 public class ProdutoDTO {
 
 	private Long id;
+	
+	@Size(min = 3, max = 80, message = "O nome deve ter entre 3 e 80 caracteres")
+	@NotBlank(message = "Campo obrigatório")
 	private String nome;
 	private String descricao;
+	
+	@Positive(message = "O preço deve ser um valor positivo")
 	private Double preco;
 	private String imgUrl;
+	
+	@PastOrPresent(message = "A data do produto não pode ser futura")
 	private Instant date;
 
 	private List<CategoriaDTO> categorias = new ArrayList<>();

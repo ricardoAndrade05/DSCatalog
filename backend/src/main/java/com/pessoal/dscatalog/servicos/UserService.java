@@ -11,9 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pessoal.dscatalog.dto.RoleDTO;
 import com.pessoal.dscatalog.dto.UserDTO;
+import com.pessoal.dscatalog.dto.UserInsertDTO;
 import com.pessoal.dscatalog.entidades.Role;
 import com.pessoal.dscatalog.entidades.User;
-import com.pessoal.dscatalog.entidades.UserInsertDTO;
 import com.pessoal.dscatalog.infra.excecoes.DatabaseException;
 import com.pessoal.dscatalog.infra.excecoes.RecursoNaoEncontradoException;
 import com.pessoal.dscatalog.repositorios.RoleRepository;

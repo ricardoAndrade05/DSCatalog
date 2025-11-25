@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.pessoal.dscatalog.dto.UserDTO;
-import com.pessoal.dscatalog.entidades.UserInsertDTO;
+import com.pessoal.dscatalog.dto.UserInsertDTO;
 import com.pessoal.dscatalog.servicos.UserService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/usuarios")
@@ -34,20 +36,20 @@ public class UsuarioController {
 	}
 
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<UserDTO> ProdutoPorId(@PathVariable Long id) {
+	public ResponseEntity<UserDTO> usuarioPorId(@PathVariable Long id) {
 		UserDTO dto = service.userPorId(id);
 		return ResponseEntity.ok().body(dto);
 	}
 
 	@PostMapping
-	public ResponseEntity<UserDTO> inserir(@RequestBody UserInsertDTO dto) {
+	public ResponseEntity<UserDTO> inserir(@Valid @RequestBody UserInsertDTO dto) {
 		UserDTO userDTO = service.inserir(dto);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(userDTO.getId()).toUri();
 		return ResponseEntity.created(uri).body(userDTO);
 	}
 
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<UserDTO> atualizar(@PathVariable Long id, @RequestBody UserDTO dto) {
+	public ResponseEntity<UserDTO> atualizar(@PathVariable Long id,@Valid @RequestBody UserDTO dto) {
 		dto = service.atualizar(id, dto);
 		return ResponseEntity.ok().body(dto);
 	}
