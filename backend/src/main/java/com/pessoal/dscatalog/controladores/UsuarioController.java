@@ -18,6 +18,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.pessoal.dscatalog.dto.UserDTO;
 import com.pessoal.dscatalog.dto.UserInsertDTO;
+import com.pessoal.dscatalog.dto.UserUpdateDTO;
 import com.pessoal.dscatalog.servicos.UserService;
 
 import jakarta.validation.Valid;
@@ -49,9 +50,9 @@ public class UsuarioController {
 	}
 
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<UserDTO> atualizar(@PathVariable Long id,@Valid @RequestBody UserDTO dto) {
-		dto = service.atualizar(id, dto);
-		return ResponseEntity.ok().body(dto);
+	public ResponseEntity<UserDTO> atualizar(@PathVariable Long id,@Valid @RequestBody UserUpdateDTO dto) {
+		UserDTO userDTO = service.atualizar(id, dto);
+		return ResponseEntity.ok().body(userDTO);
 	}
 
 	@DeleteMapping(value = "/{id}")
