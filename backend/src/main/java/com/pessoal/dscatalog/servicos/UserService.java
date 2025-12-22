@@ -1,10 +1,15 @@
 package com.pessoal.dscatalog.servicos;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +18,7 @@ import com.pessoal.dscatalog.dto.RoleDTO;
 import com.pessoal.dscatalog.dto.UserDTO;
 import com.pessoal.dscatalog.dto.UserInsertDTO;
 import com.pessoal.dscatalog.dto.UserUpdateDTO;
+import com.pessoal.dscatalog.dto.projections.UserDetailsProjection;
 import com.pessoal.dscatalog.entidades.Role;
 import com.pessoal.dscatalog.entidades.User;
 import com.pessoal.dscatalog.infra.excecoes.DatabaseException;
@@ -23,7 +29,7 @@ import com.pessoal.dscatalog.repositorios.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
 	@Autowired
 	private UserRepository repository;
@@ -32,7 +38,7 @@ public class UserService {
 	private RoleRepository roleRepository;
 	
 	@Autowired
-	private BCryptPasswordEncoder passwordEncoder;
+	private PasswordEncoder passwordEncoder;
 	
 	@Transactional(readOnly = true)
 	public Page<UserDTO> users(Pageable pageable) {
@@ -79,6 +85,21 @@ public class UserService {
 		} catch (DataIntegrityViolationException e) {
 			throw new DatabaseException("Falha de integridade referencial");
 		}
+	}
+	
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		List<UserDetailsProjection> result = repository.searchUserAndRolesByEmail(username);
+		if (result.isEmpty()) {
+			throw new UsernameNotFoundException("Email not found");
+		}
+		User user = new User();
+		user.setEmail(username);
+		user.setPassword(result.get(0).getPassword());
+		for (UserDetailsProjection projection : result) {
+			user.addRoles(new Role(projection.getRoleId(), projection.getAuthority()));
+		}
+		return user;
 	}
 	
 	private void dtoToentity(UserDTO dto, User user) {
