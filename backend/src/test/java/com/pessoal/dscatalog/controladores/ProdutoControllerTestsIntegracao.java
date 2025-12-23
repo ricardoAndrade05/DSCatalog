@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pessoal.dscatalog.dto.ProdutoDTO;
 import com.pessoal.dscatalog.infra.Factory;
+import com.pessoal.dscatalog.infra.TokenUtil;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -35,11 +36,21 @@ public class ProdutoControllerTestsIntegracao {
 	@Autowired
 	private MockMvc mockMvc;
 	
+	@Autowired
+	private TokenUtil tokenUtil;
+	
+	private String username, password, bearerToken;
+	
 	@BeforeEach()
 	void setUp() throws Exception {
 		idExistente = 1L;
 		idInexistente = 1000L;
 		contagemTotalDeProdutos = 25L;
+		
+		username = "maria@gmail.com";
+		password = "123456";
+		
+		bearerToken = tokenUtil.obtainAccessToken(mockMvc, username, password);
 	}
 
 	@Test
@@ -62,6 +73,7 @@ public class ProdutoControllerTestsIntegracao {
 		String corpoJson = objectMapper.writeValueAsString(produtoDTO);
 				
 		ResultActions result = mockMvc.perform(put("/produtos/{id}", idInexistente)
+				.header("Authorization", "Bearer " + bearerToken)
 				.content(corpoJson)
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON)); 
@@ -80,6 +92,7 @@ public class ProdutoControllerTestsIntegracao {
 
 		
 		ResultActions result = mockMvc.perform(put("/produtos/{id}", idExistente)
+				.header("Authorization", "Bearer " + bearerToken)
 				.content(corpoJson)
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON)); 
