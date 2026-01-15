@@ -1,6 +1,7 @@
 package com.pessoal.dscatalog.controladores;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,10 +27,10 @@ public class CategoriaController {
 
 	@Autowired
 	private CategoriaService service;
-
+	
 	@GetMapping
-	public ResponseEntity<Page<CategoriaDTO>> categorias(Pageable pageable) {
-		Page<CategoriaDTO> list = service.categorias(pageable);
+	public ResponseEntity<List<CategoriaDTO>> categorias() {
+		List<CategoriaDTO> list = service.categorias();
 		return ResponseEntity.ok().body(list);
 	}
 

@@ -1,9 +1,10 @@
 package com.pessoal.dscatalog.servicos;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,9 +24,9 @@ public class CategoriaService {
 	private CategoriaRepository repository;
 
 	@Transactional(readOnly = true)
-	public Page<CategoriaDTO> categorias(Pageable pageable) {
-		Page<Categoria> page = repository.findAll(pageable);
-		return page.map(categoria -> new CategoriaDTO(categoria));
+	public List<CategoriaDTO> categorias() {
+		List<Categoria> page = repository.findAll();
+		return page.stream().map(categoria -> new CategoriaDTO(categoria)).collect(Collectors.toList());
 	}
 
 	@Transactional(readOnly = true)
