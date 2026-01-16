@@ -1,8 +1,13 @@
 package com.pessoal.dscatalog.servicos;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -10,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pessoal.dscatalog.dto.CategoriaDTO;
 import com.pessoal.dscatalog.dto.ProdutoDTO;
+import com.pessoal.dscatalog.dto.projections.ProdutoProjection;
 import com.pessoal.dscatalog.entidades.Categoria;
 import com.pessoal.dscatalog.entidades.Produto;
 import com.pessoal.dscatalog.infra.excecoes.DatabaseException;
@@ -29,9 +35,17 @@ public class ProdutoService {
 	private CategoriaRepository categoriaRepository;
 
 	@Transactional(readOnly = true)
-	public Page<ProdutoDTO> produtos(Pageable pageable) {
-		Page<Produto> page = repository.findAll(pageable);
-		return page.map(produto -> new ProdutoDTO(produto));
+	public Page<ProdutoDTO> produtosPaginada(String nome, String categorias, Pageable pageable) {
+		List<Long> categoriasIds = new ArrayList<>();
+		if (!categorias.equals("0")) {
+			categoriasIds = Arrays.asList(categorias.split(",")).stream().map(cat -> Long.parseLong(cat)).toList();
+		}
+		Page<ProdutoProjection> page = repository.searchProdutos(categoriasIds, nome, pageable);
+		List<Long> produtosIds = page.stream().map(produto -> produto.getId()).toList();
+		List<Produto> produtos = repository.searchProdutosComCategorias(produtosIds);
+		List<ProdutoDTO> dtos = produtos.stream().map(produto -> new ProdutoDTO(produto,produto.getCategorias())).toList();
+		Page<ProdutoDTO> pageDTO = new PageImpl<>(dtos,page.getPageable(), page.getTotalElements());
+		return pageDTO; 
 	}
 
 	@Transactional(readOnly = true)
