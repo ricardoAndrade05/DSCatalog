@@ -22,6 +22,7 @@ import com.pessoal.dscatalog.infra.excecoes.DatabaseException;
 import com.pessoal.dscatalog.infra.excecoes.RecursoNaoEncontradoException;
 import com.pessoal.dscatalog.repositorios.CategoriaRepository;
 import com.pessoal.dscatalog.repositorios.ProdutoRepository;
+import com.pessoal.dscatalog.util.Utils;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -43,6 +44,7 @@ public class ProdutoService {
 		Page<ProdutoProjection> page = repository.searchProdutos(categoriasIds, nome, pageable);
 		List<Long> produtosIds = page.stream().map(produto -> produto.getId()).toList();
 		List<Produto> produtos = repository.searchProdutosComCategorias(produtosIds);
+		produtos = Utils.ordenarProdutosNaMesma(page.getContent(), produtos);
 		List<ProdutoDTO> dtos = produtos.stream().map(produto -> new ProdutoDTO(produto,produto.getCategorias())).toList();
 		Page<ProdutoDTO> pageDTO = new PageImpl<>(dtos,page.getPageable(), page.getTotalElements());
 		return pageDTO; 
