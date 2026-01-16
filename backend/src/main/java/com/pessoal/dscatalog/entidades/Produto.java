@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.pessoal.dscatalog.dto.projections.IdProjection;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,7 +19,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tb_produto")
-public class Produto {
+public class Produto implements IdProjection<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,6 +59,7 @@ public class Produto {
 		return categorias;
 	}
 
+    @Override
 	public Long getId() {
         return id;
     }

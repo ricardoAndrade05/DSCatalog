@@ -5,18 +5,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.pessoal.dscatalog.dto.projections.ProdutoProjection;
-import com.pessoal.dscatalog.entidades.Produto;
+import com.pessoal.dscatalog.dto.projections.IdProjection;
 
 public class Utils {
 
-	public static List<Produto> ordenarProdutosNaMesma(List<ProdutoProjection> listaOrdenada, List<Produto> listaDesordenada) {
-		Map<Long, Produto> map = new HashMap<>();
-		for (Produto produto : listaDesordenada) {
-			map.put(produto.getId(), produto);
+	public static <ID> List< ? extends IdProjection<ID>> ordenarProdutosNaMesma(List<? extends IdProjection<ID>> listaOrdenada, List<? extends IdProjection<ID>> listaDesordenada) {
+		Map<ID,IdProjection<ID>> map = new HashMap<>();
+		for (IdProjection<ID> obj : listaDesordenada) {
+			map.put(obj.getId(), obj);
 		}
-		List<Produto> listaFinal = new ArrayList<>();
-		for (ProdutoProjection pp : listaOrdenada) {
+		List<IdProjection<ID>> listaFinal = new ArrayList<>();
+		for (IdProjection<ID> pp : listaOrdenada) {
 			listaFinal.add(map.get(pp.getId()));
 		}
 		return listaFinal;

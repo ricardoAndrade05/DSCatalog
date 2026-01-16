@@ -35,6 +35,7 @@ public class ProdutoService {
 	@Autowired
 	private CategoriaRepository categoriaRepository;
 
+	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	public Page<ProdutoDTO> produtosPaginada(String nome, String categorias, Pageable pageable) {
 		List<Long> categoriasIds = new ArrayList<>();
@@ -44,7 +45,7 @@ public class ProdutoService {
 		Page<ProdutoProjection> page = repository.searchProdutos(categoriasIds, nome, pageable);
 		List<Long> produtosIds = page.stream().map(produto -> produto.getId()).toList();
 		List<Produto> produtos = repository.searchProdutosComCategorias(produtosIds);
-		produtos = Utils.ordenarProdutosNaMesma(page.getContent(), produtos);
+		produtos = (List<Produto>) Utils.ordenarProdutosNaMesma(page.getContent(), produtos);
 		List<ProdutoDTO> dtos = produtos.stream().map(produto -> new ProdutoDTO(produto,produto.getCategorias())).toList();
 		Page<ProdutoDTO> pageDTO = new PageImpl<>(dtos,page.getPageable(), page.getTotalElements());
 		return pageDTO; 
